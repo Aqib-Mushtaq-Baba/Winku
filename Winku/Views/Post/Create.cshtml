@@ -1,0 +1,23 @@
+﻿@model PostVM
+
+@{
+    ViewBag.Title = "Create-Post";
+}
+
+<h2>Upload your Post</h2>
+
+<form method="post" enctype="multipart/form-data">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label"></label>
+        <input asp-for="Description" type="text" class="form-control">
+    </div>
+    
+    <div class="mb-3">
+        <label asp-for="PostImage" class="form-label"></label>
+        <input asp-for="PostImage" type="file" class="form-control">
+    </div>
+    
+
+    <button type="submit" class="btn btn-primary">Upload</button>
+</form>

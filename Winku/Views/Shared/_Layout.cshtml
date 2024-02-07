@@ -1,0 +1,107 @@
+﻿@inject SignInManager<ApplicationUser> signInManager
+@inject UserManager<ApplicationUser> userManager
+@using System.Security.Claims
+@inject LayoutClassService layoutClassService
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Winku</title>
+    <script src="~/js/Post.js"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/Winku.styles.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg bg-body-tertiary bg-warning">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-controller="Home" asp-action="Index">Winku</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" asp-controller="Home" asp-action="index">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" asp-controller="Post" asp-action="Create">Create-Post</a>
+                        </li>
+                        
+
+                        @if (signInManager.IsSignedIn(User))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link active" aria-current="page" asp-controller="Post" asp-action="ViewPosts">Posts</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link active" aria-current="page" asp-controller="Freind" asp-action="FreindRequests">Freind-Requests</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Manage-Accounts&Administration
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" asp-controller="administration" asp-action="CreateRole">Create-Role</a></li>
+                                    <li><a class="dropdown-item" asp-controller="administration" asp-action="ViewUsers">View Users</a></li>
+                                    <li><a class="dropdown-item" asp-controller="administration" asp-action="ViewRoles">View Roles</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="#">Something else here</a></li>
+                                </ul>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link active" aria-current="page" asp-controller="Account" asp-action="Register">Register</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Account" asp-action="Login">Login</a>
+                            </li>
+                        }
+
+
+
+                    </ul>
+                    @if (signInManager.IsSignedIn(User))
+                    {
+                        <form class="d-flex" role="search" asp-action="SearchUsers" asp-controller="account">
+                            <input name="Username" type="text" class="form-control me-1" placeholder="Search" aria-label="Search">
+                            <button class="btn btn-success me-1" type="submit">Search</button>
+                        </form>
+                        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                        <form class="d-flex" role="search" asp-controller="account" asp-action="logout">
+                            <button class="btn btn-success" type="submit">Logout @User.Identity.Name</button>
+                        </form>
+                        <div class="m-lg-1">
+                            <a asp-action="edituserdetails" asp-controller="account" asp-route-id="@userId">
+                                <img src="~/UserProfilePictures/@await layoutClassService.GetUserProfile(userId)" width="35" height="35">
+                            </a>
+                        </div>
+                       
+                    }
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2024 - Winku - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/Post.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

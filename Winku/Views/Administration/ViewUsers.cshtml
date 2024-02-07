@@ -1,0 +1,15 @@
+﻿@model IEnumerable<AllUsersVM>
+
+@{
+    ViewBag.Title = "All-Users";
+}
+
+<span onclick="location.href='@Url.Action("Viewposts", "post")'" class="btn btn-outline-primary mt-2">Go Back</span>
+<h1>All users</h1>
+
+@foreach(var user in Model)
+{
+    <h3>@user.Id</h3>
+    <h3>@user.Name</h3>
+    <hr />
+}

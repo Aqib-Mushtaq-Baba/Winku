@@ -1,0 +1,45 @@
+﻿@model EditRegisterUserVM
+
+@{
+    ViewBag.Title = "Profile-Details";
+    var photoPath = "~/UserProfilePictures/" + Model.ExistingProfilePicture;
+}
+
+<h2>Profile-Details</h2>
+
+<form method="post" enctype="multipart/form-data">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <input asp-for="Id" hidden>
+    <input asp-for="ExistingProfilePicture" hidden>
+    <div class="mb-3">
+        <label asp-for="UserName" class="form-label"></label>
+        <input asp-for="UserName" type="text" class="form-control">
+    </div>
+    <div class="mb-3">
+        <label asp-for="Email" class="form-label"></label>
+        <input asp-for="Email" type="email" class="form-control">
+    </div>
+    @if (string.IsNullOrEmpty(Model.ExistingProfilePicture))
+    {
+        <div class="mb-3">
+            <img src="~/UserProfilePictures/DummyImage.png" alt="No_Profile_Image_Available" height="100" width="100">
+        </div>
+    }
+    else
+    {
+        <div class="mb-3">
+            <img src="@photoPath" asp-append-version="true" height="100" width="100" alt="loading.....">
+        </div>
+    }
+    <div class="mb-3">
+        <label asp-for="ProfilePicture" class="form-label"></label>
+        <input asp-for="ProfilePicture" type="file" class="form-control">
+    </div>
+    
+    
+    <div>
+        <button type="submit" class="btn btn-info">Update Changes</button>
+        <button type="button" class="btn btn-secondary" onclick="location.href='@Url.Action("index", "Home")'">Back To Home</button>
+    </div>
+
+</form>

@@ -1,0 +1,101 @@
+﻿@model IEnumerable<AllPostVM>
+
+@{
+    ViewBag.Title = "All-Posts";
+}
+
+<h2>Welcome @User.Identity.Name</h2>
+
+<button type="button" class="btn btn-primary"
+        onclick="location.href='@Url.Action("Create", "post")'">
+    Create New Post
+</button>
+
+@if (Model.Any())
+{
+    @foreach (var item in Model)
+    {
+        <div class="card m-2" style="width: 18rem;">
+            <h5 class="card-title mt-auto">@item.Usernname</h5>
+            <hr />
+            @if (@item.PostImagePath != null)
+            {
+                <img src="~/PostImages/@item.PostImagePath" class="card-img-top" alt="..." width="100" height="100">
+                @* <video controls autoplay width="200" height="200">
+                    <source src="~/PostImages/@item.PostImagePath" type="video/webm"/> 
+                </video> *@
+            }
+            <div class="card-body">
+                    <p class="card-text">@item.Description</p>
+                    <a onclick="location.href='@Url.Action("ViewSinglepost", "post")?id=@item.Id'" class="btn btn-primary">View</a>
+                    <a onclick="location.href='@Url.Action("Edit", "post")?id=@item.Id'" class="btn btn-warning">Edit</a>
+                    <a onclick="location.href='@Url.Action("Delete", "post")?id=@item.Id'" class="btn btn-danger">Delete</a>
+            </div>
+            <div class="card-body">
+                @if (item.IsLiked)
+                {
+                    <a onclick="likepost(@item.Id);" id="@item.Id" class="btn btn-secondary likebtn mb-2">@item.LikeCount Liked</a>
+                }
+                else
+                {
+                    <a onclick="likepost(@item.Id);" id="@item.Id" class="btn btn-secondary likebtn mb-2">@item.LikeCount Like</a>
+                }
+                <a onclick="showhide(this)" post-id="@item.Id" class="btn btn-secondary mb-2 cmt">Comment</a>
+
+
+                <div class="comment-body" post-id="@item.Id" user-id="@item.UserId" style="display:none">
+
+                    @* @if (item.Comments.Any())
+                    { *@
+                    <div class="dynamically" post-id="@item.Id" user-id="@item.UserId">
+                        
+                            @foreach (var obj in item.Comments)
+                            {
+
+                                <div class="input-group mb-1 mt-2 test" post-id="@item.Id" user-id="@item.UserId">
+                                    <input type="text" disabled value="@obj" class="form-control view-comment" post-id="@item.Id" user-id="@item.UserId" aria-label="Example text with two button addons">
+                                </div>
+
+                            } 
+                    </div>
+                   @*  }
+                    else *@
+                    @if (!item.Comments.Any())
+                    {
+                        <div class="abc" post-id="@item.Id">
+                            <div class="input-group mb-1 mt-2" post-id="@item.Id" user-id="@item.UserId">
+                                <input type="text" disabled value="No-comments" class="form-control view-comment" post-id="@item.Id" user-id="@item.UserId" aria-label="Example text with two button addons">
+                            </div>
+                        </div>
+                    }                    
+
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control get-comment" post-id="@item.Id" user-id="@item.UserId" placeholder="Add Comment">
+                        <button onclick="comment(this)" post-id="@item.Id" user-id="@item.UserId"  class="btn btn-outline-success">Add Comment</button>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    
+    }      
+
+}
+else
+{
+    <h2>No Posts Available</h2>
+}
+
+
+@* <script src="~/lib/jquery/dist/jquery.js"></script>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/jquery-validation/dist/additional-methods.js"></script>
+<script src="~/lib/jquery-validation/dist/additional-methods.min.js"></script>
+<script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script> *@
+
+
+<script src="~/js/post.js"></script>

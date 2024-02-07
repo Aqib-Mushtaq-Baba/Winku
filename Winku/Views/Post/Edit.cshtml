@@ -1,0 +1,48 @@
+﻿@model EditPostVM
+
+@{
+    ViewBag.Title = "Edit-Post";
+    var photoPath = "~/PostImages/" + Model.ExistingPostImage;
+}
+
+<h2>Edit your Post</h2>
+
+<form method="post" enctype="multipart/form-data">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <input asp-for="Id" hidden>
+    <input asp-for="ExistingPostImage" hidden>
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label"></label>
+        <input asp-for="Description" type="text" class="form-control">
+    </div>
+    
+    @* @if (string.IsNullOrEmpty(Model.ExistingPostImage))
+    {
+        <div class="mb-3">
+            <img src="~/PostImages/No_image.jpg" alt="No_Profile_Image_Available" height="100" width="100">
+        </div>
+    }
+    else
+    {
+        <div class="mb-3">
+            <img src="@photoPath" asp-append-version="true" height="100" width="100" alt="loading.....">
+        </div>
+    } *@
+    @if (Model.ExistingPostImage != null)
+    {
+        <div class="mb-3">
+            <img src="@photoPath" asp-append-version="true" height="100" width="100" alt="loading.....">
+        </div>
+    }
+    <div class="mb-3">
+        <label asp-for="PostImage" class="form-label"></label>
+        <input asp-for="PostImage" type="file" class="form-control">
+    </div>
+
+
+    <div>
+        <button type="submit" class="btn btn-info">Update Changes</button>
+        <button type="button" class="btn btn-secondary" onclick="location.href='@Url.Action("ViewPosts", "post")'">Back To Post</button>
+    </div>
+
+</form>

@@ -1,0 +1,19 @@
+﻿@model Post
+
+@{
+    ViewBag.Title = "Single-Post";
+}
+
+<div class="card m-2" style="width: 18rem;">
+
+    <h5 class="card-title mt-auto">@User.Identity.Name</h5>
+    <hr />
+    @if (Model.PostImagePath != null)
+    {
+        <img src="~/PostImages/@Model.PostImagePath" class="card-img-top" alt="..." width="100" height="100">
+    }
+    <div class="card-body">
+        <p class="card-text">@Model.Description</p>
+        <a onclick="location.href='@Url.Action("Viewposts", "post")'" class="btn btn-secondary">Go Back</a>
+    </div>
+</div>

@@ -1,0 +1,46 @@
+﻿@model IEnumerable<SearchedUsersResponseVM>
+
+    <h1>Searched Users</h1>
+<span onclick="location.href='@Url.Action("index", "home")'" class="btn btn-secondary mt-2">Go Back</span>
+
+@if (Model.Any())
+{
+    @foreach (var item in Model)
+    {
+        <h5>@item.Username</h5>
+
+        @if (item.ProfileImage != null)
+        {
+            <img src="~/UserProfilePictures/@item.ProfileImage" width="100" height="100"/>
+        }
+        else
+        {
+            <img src="~/UserProfilePictures/DummyImage.png" width="100" height="100" />
+        }
+
+        @if (item.IsAdded=="Sended")
+        {
+            <span onclick="delfreind(this)" user-id="@item.Id" class="btn btn-warning mt-2 likebtn">Request Sended</span>
+            <hr />
+        }
+        else if(item.IsAdded == "Accepted")
+        {
+            <span user-id="@item.Id" class="btn btn-secondary mt-2 likebtn">View User</span>
+            <span onclick="delfreind(this)" user-id="@item.Id" class="btn btn-secondary mt-2 likebtn">Unfollow Freind</span>
+            <hr />            
+        }
+        else if (item.IsAdded == "Rejected")
+        {
+            <span onclick="addfreind(this)" user-id="@item.Id" class="btn btn-warning mt-2 likebtn">Add Freind</span>
+            <hr />
+        }
+        
+    }
+}
+else
+{
+    <h3>
+        No Users Found
+    </h3>
+}
+<script src="~/js/searchusers.js"></script>

@@ -1,0 +1,56 @@
+﻿@inject SignInManager<ApplicationUser> signInManager
+@inject UserManager<ApplicationUser> userManager
+
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+@if (signInManager.IsSignedIn(User))
+{
+    <div class="text-center">
+        @if (Convert.ToInt32(TempData["postCount"]) == 0)
+        {
+            <h1 class="display-4">Welcome @User.Identity.Name to Winku </h1>
+            <strong>Start your journey now. Let your creativity unfold by sharing your first post with the world!</strong>
+        }
+        else
+        {
+            <h1 class="display-4">Welcome back @User.Identity.Name to your own Winku </h1>
+            <strong>Wow! You've contributed to the community with a total of @TempData["postCount"] Posts. Keep up the fantastic work!</strong>
+        }
+
+    </div>
+}
+else
+{
+    <div class="text-center">
+        <h1 class="display-4">Welcome to your own Winku </h1>
+        <h4>PLease register or login to upload your personal posts</h4>
+    </div>
+}
+
+
+@if (TempData["RegisterSuccessMessage"] != null)
+{
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>@TempData["RegisterSuccessMessage"]</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["LoginSuccessMessage"] != null)
+{
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>@TempData["LoginSuccessMessage"]</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["LogoutMessage"] != null)
+{
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>@TempData["LogoutMessage"]</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
