@@ -10,6 +10,7 @@ namespace Winku.Interfaces
         string CheckStatus(string userid, string newUserId);
         Followers FollowFreind(Followers model);
         IEnumerable<Followers> MineFollowers(string id);
+        IEnumerable<Followers> MeFollowing(string id);
         Followers UnfollowFreind(string userid, string newUserId);
 
         IEnumerable<Followers> GetFreindRequets(string userid);

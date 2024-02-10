@@ -41,14 +41,14 @@ namespace Winku.Controllers
                     };
 
                     likeRepository.Addlike(like);
-                    var LikeCount = context.Likes.Where(x => x.UserId == currentUserId && x.PostId == currentPostId).Count();
+                    var LikeCount = context.Likes.Where(x => x.PostId == currentPostId).Count();
                     return Json(LikeCount + " Liked");
                 }
                 else
                 {
                     likeRepository.DeleteLike(currentUserId, currentPostId);
-                    var LikeCount = context.Likes.Where(x => x.UserId == currentUserId && x.PostId == currentPostId).Count();
-                    return Json(LikeCount + " Like");
+                    var LikeCount = context.Likes.Where(x => x.PostId == currentPostId).Count();
+                    return Json(LikeCount + " Likes");
                 }
             }
             return Json("BIG ERROR,,,,,,Dislike");

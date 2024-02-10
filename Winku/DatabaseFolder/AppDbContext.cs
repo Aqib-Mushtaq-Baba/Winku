@@ -16,6 +16,7 @@ namespace Winku.DatabaseFolder
         public DbSet<Like> Likes { get; set; }
         public DbSet<Followers> Followers { get; set; }
         public DbSet<Comments> Comments { get; set; }
+        public DbSet<Email> Emails { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

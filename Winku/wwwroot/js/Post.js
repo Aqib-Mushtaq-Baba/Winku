@@ -1,11 +1,12 @@
 ﻿function likepost(id) {
     var postId = id;
     var Endpoint = '/Like/LikePost/';
-
+    
     $.ajax({
         type: 'GET',
         url: Endpoint + '?id=' + postId,
         success: function (response) {
+            debugger
             $('.likebtn[id="' + postId + '"]').text(response);
             console.log(response);
         },

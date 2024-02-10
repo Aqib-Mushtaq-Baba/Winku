@@ -47,7 +47,6 @@ namespace Winku.Repositories
             foreach (var post in all)
             {
                 var obj = new AllPostVM();
-                //obj.LikeCount = context.Likes.allcount();
                 obj.IsLiked = context.Likes.Where(x => x.UserId == id && x.PostId == post.Id).Any();
                 obj.LikeCount = context.Likes.Where(x => x.PostId == post.Id).Count();
                 obj.PostImagePath = post.PostImagePath;
@@ -56,14 +55,15 @@ namespace Winku.Repositories
                 obj.Description = post.Description;
                 obj.CreatedOn = post.CreatedOn;
                 obj.Id = post.Id;
-                if (post.Comments !=null && post.Comments.Count>0)
+                var cmt=context.Comments.Where(x => x.PostId==post.Id).ToList();
+                if (post.Comments != null && post.Comments.Count > 0)
                 {
-                    foreach (var item in post.Comments)
+                    foreach (var item in cmt)
                     {
                         obj.Comments.Add(item.Comment);
                     }
                 }
-                
+
                 posts.Add(obj);
             }
             return posts;

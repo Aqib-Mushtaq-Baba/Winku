@@ -1,0 +1,25 @@
+﻿@model EmailVM
+
+@{
+    ViewBag.Title = "Email";
+}
+
+<h3>If you any queries feel free to write us</h3>
+
+<form method="post">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <div class="mb-3">
+        <label asp-for="EmailFrom" class="form-label"></label>
+        <input asp-for="EmailFrom" type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+    </div>
+    <div class="mb-3">
+        <label asp-for="Subject" class="form-label"></label>
+        <input asp-for="Subject" type="text" class="form-control" id="exampleInputPassword1">
+    </div>
+    <div class="mb-3">
+        <label asp-for="EmailBody" class="form-label"></label>
+        <input asp-for="EmailBody" type="text" class="form-control" id="exampleInputPassword1">
+    </div>
+    
+    <button type="submit" class="btn btn-primary">Send</button>
+</form>

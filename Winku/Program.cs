@@ -29,9 +29,11 @@ builder.Services.AddScoped<IPostInterface,PostRepository>();
 builder.Services.AddScoped<ILikeInterface,LikeRepository>();
 builder.Services.AddScoped<IFreindInterface, FreindRepository>();
 builder.Services.AddScoped<ICommentInterface, CommentRepository>();
+builder.Services.AddScoped<IEmailInterface, EmailRepository>();
 builder.Services.AddScoped<FreindRepository>();
 builder.Services.AddScoped<PostRepository>();
 builder.Services.AddScoped<CommentRepository>();
+builder.Services.AddScoped<EmailRepository>();
 builder.Services.AddScoped<LayoutClassService>();
 
 var app = builder.Build();

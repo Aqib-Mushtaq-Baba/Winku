@@ -32,15 +32,19 @@
                     <a onclick="location.href='@Url.Action("Delete", "post")?id=@item.Id'" class="btn btn-danger">Delete</a>
             </div>
             <div class="card-body">
-                @if (item.IsLiked)
+                @if (item.IsLiked && item.LikeCount>0)
                 {
                     <a onclick="likepost(@item.Id);" id="@item.Id" class="btn btn-secondary likebtn mb-2">@item.LikeCount Liked</a>
                 }
+                else if (!item.IsLiked && item.LikeCount > 0)
+                {
+                    <a onclick="likepost(@item.Id);" id="@item.Id" class="btn btn-secondary likebtn mb-2">@item.LikeCount Likes</a>
+                }
                 else
                 {
-                    <a onclick="likepost(@item.Id);" id="@item.Id" class="btn btn-secondary likebtn mb-2">@item.LikeCount Like</a>
+                    <a onclick="likepost(@item.Id);" id="@item.Id" class="btn btn-secondary likebtn mb-2">@item.LikeCount Likes</a>
                 }
-                <a onclick="showhide(this)" post-id="@item.Id" class="btn btn-secondary mb-2 cmt">Comment</a>
+                <a onclick="showhide(this)" post-id="@item.Id" class="btn btn-secondary mb-2 cmt">Comment</a> 
 
 
                 <div class="comment-body" post-id="@item.Id" user-id="@item.UserId" style="display:none">

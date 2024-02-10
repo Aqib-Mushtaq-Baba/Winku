@@ -65,13 +65,17 @@ namespace Winku.Controllers
         {
             var userId = userManager.GetUserId(User);
             var followers=freindRepository.MineFollowers(userId);
+            //var following=freindRepository.MeFollowing(userId);
             var p = await postRepository.GetAllPostsAsync(userId);
             var posts = p.ToList();
             foreach (var item in followers)
             {
                 var x =await postRepository.GetAllPostsAsync(item.FollowerId);
+                //var y =await postRepository.GetAllPostsAsync(item.FollowingId);
                 var followersPost = x.ToList();
+                //var followersPost1 = y.ToList();
                 posts.AddRange(followersPost);
+                //posts.AddRange(followersPost1);
             }
             posts = posts.OrderByDescending(x => x.CreatedOn).ToList();
             return View(posts);

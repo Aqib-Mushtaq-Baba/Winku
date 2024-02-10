@@ -105,5 +105,9 @@ namespace Winku.Repositories
         {
             return context.Followers.Where(x => x.FollowingId == id && x.Status==1);
         }
+        public IEnumerable<Followers> MeFollowing(string id)
+        {
+            return context.Followers.Where(x => x.FollowerId == id && x.Status == 1);
+        }
     }
 }
