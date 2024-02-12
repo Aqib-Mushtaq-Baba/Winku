@@ -9,6 +9,7 @@ namespace Winku.Interfaces
 
         //IEnumerable<Post> GetAllPosts(string id);
         Task<IEnumerable<AllPostVM>> GetAllPostsAsync(string id);
+        Task<IEnumerable<AllPostVM>> FollowersGetAllPostsAsync(string id);
 
         Post GetSinglePost(int id);
 

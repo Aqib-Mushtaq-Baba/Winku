@@ -5,15 +5,16 @@ using Winku.ViewModels;
 using Winku.Repositories;
 using MimeKit;
 using MailKit.Net.Smtp;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Winku.Controllers
 {
-    public class Administration : Controller
+    public class AdministrationController : Controller
     {
         private readonly UserManager<ApplicationUser> userManager;
         private readonly EmailRepository emailRepository;
 
-        public Administration(UserManager<ApplicationUser> userManager,
+        public AdministrationController(UserManager<ApplicationUser> userManager,
                                 EmailRepository emailRepository)
         {
             this.userManager = userManager;
@@ -45,6 +46,7 @@ namespace Winku.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult Contact()
         {
             return View();

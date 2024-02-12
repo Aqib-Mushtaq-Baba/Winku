@@ -13,7 +13,7 @@ namespace Winku.ViewModels
         public string Usernname { get; set; }
         public string? Description { get; set; }
         public string? PostImagePath { get; set; }
-        public string UserId { get; set; }
+        public bool UserId { get; set; }
         public DateTime CreatedOn { get; set; }
         
         public int LikeCount { get; set; }

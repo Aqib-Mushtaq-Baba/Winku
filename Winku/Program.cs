@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Winku.CustomServices;
 using Winku.DatabaseFolder;
@@ -16,7 +18,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(
             options.Password.RequireLowercase = false;
             options.Password.RequireUppercase = false;
             options.Password.RequiredLength = 3;
-        })
+        }).AddDefaultTokenProviders()
     .AddEntityFrameworkStores<AppDbContext>();
 
 builder.Services.AddControllersWithViews();
@@ -24,6 +26,13 @@ builder.Services.AddMvc();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("WinkuDBConnection")));
+
+builder.Services.AddMvc(config => {
+    var policy = new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .Build();
+    config.Filters.Add(new AuthorizeFilter(policy));
+});
 
 builder.Services.AddScoped<IPostInterface,PostRepository>();
 builder.Services.AddScoped<ILikeInterface,LikeRepository>();
@@ -35,6 +44,7 @@ builder.Services.AddScoped<PostRepository>();
 builder.Services.AddScoped<CommentRepository>();
 builder.Services.AddScoped<EmailRepository>();
 builder.Services.AddScoped<LayoutClassService>();
+builder.Services.AddScoped<EmailService>();
 
 var app = builder.Build();
 

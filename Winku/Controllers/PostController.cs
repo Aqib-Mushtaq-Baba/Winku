@@ -70,7 +70,7 @@ namespace Winku.Controllers
             var posts = p.ToList();
             foreach (var item in followers)
             {
-                var x =await postRepository.GetAllPostsAsync(item.FollowerId);
+                var x =await postRepository.FollowersGetAllPostsAsync(item.FollowerId);
                 //var y =await postRepository.GetAllPostsAsync(item.FollowingId);
                 var followersPost = x.ToList();
                 //var followersPost1 = y.ToList();

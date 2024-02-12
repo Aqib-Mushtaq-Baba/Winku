@@ -42,6 +42,7 @@ namespace Winku.Repositories
 
         public async Task<IEnumerable<AllPostVM>> GetAllPostsAsync(string id)
         {
+            
             List<AllPostVM> posts = new List<AllPostVM>();
             var all = context.Posts.Where(x => x.UserId == id);
             foreach (var post in all)
@@ -55,7 +56,44 @@ namespace Winku.Repositories
                 obj.Description = post.Description;
                 obj.CreatedOn = post.CreatedOn;
                 obj.Id = post.Id;
+                if (id == post.UserId)
+                {
+                    obj.UserId = true;
+                }
                 var cmt=context.Comments.Where(x => x.PostId==post.Id).ToList();
+                if (post.Comments != null && post.Comments.Count > 0)
+                {
+                    foreach (var item in cmt)
+                    {
+                        obj.Comments.Add(item.Comment);
+                    }
+                }
+
+                posts.Add(obj);
+            }
+            return posts;
+        }
+        public async Task<IEnumerable<AllPostVM>> FollowersGetAllPostsAsync(string id)
+        {
+            
+            List<AllPostVM> posts = new List<AllPostVM>();
+            var all = context.Posts.Where(x => x.UserId == id);
+            foreach (var post in all)
+            {
+                var obj = new AllPostVM();
+                obj.IsLiked = context.Likes.Where(x => x.UserId == id && x.PostId == post.Id).Any();
+                obj.LikeCount = context.Likes.Where(x => x.PostId == post.Id).Count();
+                obj.PostImagePath = post.PostImagePath;
+                var appUser = await userManager.FindByIdAsync(post.UserId);
+                obj.Usernname = appUser.UserName;
+                obj.Description = post.Description;
+                obj.CreatedOn = post.CreatedOn;
+                obj.Id = post.Id;
+                //if (id == post.UserId)
+                //{
+                //    obj.UserId = true;
+                //}
+                var cmt = context.Comments.Where(x => x.PostId == post.Id).ToList();
                 if (post.Comments != null && post.Comments.Count > 0)
                 {
                     foreach (var item in cmt)

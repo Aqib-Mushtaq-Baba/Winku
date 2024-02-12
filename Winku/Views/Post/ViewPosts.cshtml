@@ -25,12 +25,15 @@
                     <source src="~/PostImages/@item.PostImagePath" type="video/webm"/> 
                 </video> *@
             }
-            <div class="card-body">
-                    <p class="card-text">@item.Description</p>
-                    <a onclick="location.href='@Url.Action("ViewSinglepost", "post")?id=@item.Id'" class="btn btn-primary">View</a>
-                    <a onclick="location.href='@Url.Action("Edit", "post")?id=@item.Id'" class="btn btn-warning">Edit</a>
-                    <a onclick="location.href='@Url.Action("Delete", "post")?id=@item.Id'" class="btn btn-danger">Delete</a>
-            </div>
+            @if (item.UserId)
+            {
+                <div class="card-body">
+                        <p class="card-text">@item.Description</p>
+                        <a onclick="location.href='@Url.Action("ViewSinglepost", "post")?id=@item.Id'" class="btn btn-primary">View</a>
+                        <a onclick="location.href='@Url.Action("Edit", "post")?id=@item.Id'" class="btn btn-warning">Edit</a>
+                        <a onclick="location.href='@Url.Action("Delete", "post")?id=@item.Id'" class="btn btn-danger">Delete</a>
+                </div>                
+            }
             <div class="card-body">
                 @if (item.IsLiked && item.LikeCount>0)
                 {

@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System.Runtime.Intrinsics.Arm;
+using Winku.CustomServices;
 using Winku.DatabaseFolder;
 using Winku.Repositories;
 using Winku.ViewModels;
@@ -14,16 +16,19 @@ namespace Winku.Controllers
         private readonly SignInManager<ApplicationUser> signInManager;
         private readonly IWebHostEnvironment webHostEnvironment;
         private readonly FreindRepository freindRepository;
+        private readonly EmailService emailService;
 
         public AccountController(UserManager<ApplicationUser> userManager,
                                     SignInManager<ApplicationUser> signInManager,
                                     IWebHostEnvironment webHostEnvironment,
-                                    FreindRepository freindRepository)
+                                    FreindRepository freindRepository,
+                                    EmailService emailService)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.webHostEnvironment = webHostEnvironment;
             this.freindRepository = freindRepository;
+            this.emailService = emailService;
         }
 
         [HttpGet]
@@ -51,14 +56,52 @@ namespace Winku.Controllers
 
                     if (result1.Succeeded)
                     {
-                        TempData["RegisterSuccessMessage"] = "Registered &&&&& Logged in Peacefully";
-                        await signInManager.SignInAsync(dpUser, isPersistent: false);
-                        return RedirectToAction("Index", "Home");
+                        var token = await userManager.GenerateEmailConfirmationTokenAsync(dpUser);
+
+                        var confirmationLink = Url.Action("ConfirmEmail", "Account",
+                            new { userId = dpUser.Id, token = token }, Request.Scheme);
+
+                        emailService.emailSent(dpUser.Email, confirmationLink);
+
+                        ViewBag.ErrorTitle = "Registration successful";
+                        ViewBag.ErrorMessage = "Before you can Login, please confirm your " +
+                                "email, by clicking on the confirmation link we have emailed you";
+                        return View("Error");
+
+                        //TempData["RegisterSuccessMessage"] = "Registered &&&&& Logged in Peacefully";
+                        //        await signInManager.SignInAsync(dpUser, isPersistent: false);
+                        //        return RedirectToAction("Index", "Home");
                     }
                     ModelState.AddModelError(string.Empty, "Some error occured");
                 }
                 return View();            
         }
+
+        [AllowAnonymous]
+        public async Task<IActionResult> ConfirmEmail(string userId, string token)
+        {
+            if (userId == null || token == null)
+            {
+                return RedirectToAction("index", "home");
+            }
+
+            var user = await userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                ViewBag.ErrorMessage = $"The User ID {userId} is invalid";
+                return View("NotFound");
+            }
+
+            var result = await userManager.ConfirmEmailAsync(user, token);
+            if (result.Succeeded)
+            {
+                return View();
+            }
+
+            ViewBag.ErrorTitle = "Email cannot be confirmed";
+            return View("Error");
+        }
+
 
         [HttpGet]
         [AllowAnonymous]
@@ -73,9 +116,11 @@ namespace Winku.Controllers
         {
             if (ModelState.IsValid)
             {
+                //var user =await userManager.FindByNameAsync(model.UserName);
                 var result = await signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, false);
 
 
+                //if (result.Succeeded && user.EmailConfirmed)
                 if (result.Succeeded)
                 {
                     TempData["LoginSuccessMessage"] = "Logged in Peacefully";
@@ -215,6 +260,155 @@ namespace Winku.Controllers
                 return View();
            
         }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordVM model)
+        {
+            if (ModelState.IsValid)
+            {
+                // Find the user by email
+                var user = await userManager.FindByEmailAsync(model.Email);
+                // If the user is found AND Email is confirmed
+                //if (user != null && await userManager.IsEmailConfirmedAsync(user))
+                if (user != null)
+                {
+                    // Generate the reset password token
+                    var token = await userManager.GeneratePasswordResetTokenAsync(user);
+
+                    // Build the password reset link
+                    var passwordResetLink = Url.Action("ResetPassword", "Account",
+                            new { email = model.Email, token = token }, Request.Scheme);
+
+                    emailService.emailSent(user.Email,passwordResetLink);
+
+                    // Log the password reset link
+                    //logger.Log(LogLevel.Warning, passwordResetLink);
+
+                    // Send the user to Forgot Password Confirmation view
+                    return View("ForgotPasswordConfirmation");
+                }
+
+                // To avoid account enumeration and brute force attacks, don't
+                // reveal that the user does not exist or is not confirmed
+                return View("ForgotPasswordConfirmation");
+            }
+
+            return View(model);
+        }
+
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ResetPassword(string token, string email)
+        {
+            // If password reset token or email is null, most likely the
+            // user tried to tamper the password reset link
+            if (token == null || email == null)
+            {
+                ModelState.AddModelError("", "Invalid password reset token");
+            }
+            return View();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> ResetPassword(ResetPasswordVM model)
+        {
+            if (ModelState.IsValid)
+            {
+                // Find the user by email
+                var user = await userManager.FindByEmailAsync(model.Email);
+
+                if (user != null)
+                {
+                    // reset the user password
+                    var result = await userManager.ResetPasswordAsync(user, model.Token, model.Password);
+                    if (result.Succeeded)
+                    {
+                        // Upon successful password reset and if the account is lockedout, set
+                        // the account lockout end date to current UTC date time, so the user
+                        // can login with the new password
+                        if (await userManager.IsLockedOutAsync(user))
+                        {
+                            await userManager.SetLockoutEndDateAsync(user, DateTimeOffset.UtcNow);
+                        }
+                        return View("ResetPasswordConfirmation");
+                    }
+                    // Display validation errors. For example, password reset token already
+                    // used to change the password or password complexity rules not met
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError("", error.Description);
+                    }
+                    return View(model);
+                }
+
+                // To avoid account enumeration and brute force attacks, don't
+                // reveal that the user does not exist
+                return View("ResetPasswordConfirmation");
+            }
+            // Display validation errors if model state is not valid
+            return View(model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ChangePassword()
+        {
+            //var user = await userManager.GetUserAsync(User);
+
+            //var userHasPassword = await userManager.HasPasswordAsync(user);
+
+            //if (!userHasPassword)
+            //{
+            //    return RedirectToAction("AddPassword");
+            //}
+
+            return View();
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> ChangePassword(ChangePasswordVM model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await userManager.GetUserAsync(User);
+                if (user == null)
+                {
+                    return RedirectToAction("Login");
+                }
+
+                // ChangePasswordAsync changes the user password
+                var result = await userManager.ChangePasswordAsync(user,
+                    model.CurrentPassword, model.NewPassword);
+
+                // The new password did not meet the complexity rules or
+                // the current password is incorrect. Add these errors to
+                // the ModelState and rerender ChangePassword view
+                if (!result.Succeeded)
+                {
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                    return View();
+                }
+
+                // Upon successfully changing the password refresh sign-in cookie
+                await signInManager.RefreshSignInAsync(user);
+                return View("ChangePasswordConfirmation");
+            }
+            return View(model);
+        }
+
         private string? upload(RegisterUserVM model)
         {
             string uniqueFileName = null;
